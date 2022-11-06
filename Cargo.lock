@@ -5,6 +5,10 @@ version = 3
 [[package]]
 name = "bending"
 version = "0.1.0"
+dependencies = [
+ "denest",
+ "motif",
+]
 
 [[package]]
 name = "bending_tests"
@@ -12,3 +16,11 @@ version = "0.1.0"
 dependencies = [
  "bending",
 ]
+
+[[package]]
+name = "denest"
+version = "0.1.0"
+
+[[package]]
+name = "motif"
+version = "0.1.0"
