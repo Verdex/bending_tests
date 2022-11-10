@@ -25,6 +25,39 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_param_cons_with_multiple_nexts() {
+        struct Options2(u8, u8);
+        let matcher : fn(Options2) -> Vec<char> = object_pattern!(Options2(!, !); 4 => { 's' });
+        let output = matcher(Options2(4, 4));
+        assert_eq!(output, vec!['s', 's']);
+    }
+
+    #[test]
+    fn object_pattern_should_handle_param_cons_with_next() {
+        struct Options2(u8, u8);
+        let matcher : fn(Options2) -> Vec<char> = object_pattern!(Options2(!, 2); 4 => { 's' });
+        let output = matcher(Options2(4, 2));
+        assert_eq!(output, vec!['s']);
+    }
+
+    #[test]
+    fn object_pattern_should_handle_nested_param_cons() {
+        struct Options3(u8, u8);
+        struct Options2(Options3, Options3);
+        let matcher : fn(Options2) -> Vec<char> = object_pattern!(Options2(Options3(1, 2), Options3(3, 4)) => { 's' });
+        let output = matcher(Options2(Options3(1, 2), Options3(3, 4)));
+        assert_eq!(output, vec!['s']);
+    }
+
+    #[test]
+    fn object_pattern_should_handle_param_cons() {
+        struct Options2(u8, u8);
+        let matcher : fn(Options2) -> Vec<char> = object_pattern!(Options2(1, 2) => { 's' });
+        let output = matcher(Options2(1, 2));
+        assert_eq!(output, vec!['s']);
+    }
+
+    #[test]
     fn object_pattern_should_handle_namespace_in_module_cons() {
         mod inner {
             #[derive(Debug)]
