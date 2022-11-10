@@ -25,6 +25,35 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_namespace_in_module_cons() {
+        mod inner {
+            #[derive(Debug)]
+            pub enum Options2 {
+                First,
+                Second,
+            }
+        }
+        let matcher : fn(inner::Options2) -> Vec<char> = object_pattern!(inner::Options2::First => { 's' });
+        let output = matcher(inner::Options2::First);
+        assert_eq!(output, vec!['s']);
+    }
+
+    #[test]
+    fn object_pattern_should_handle_namespace_cons() {
+        let matcher : fn(Options) -> Vec<char> = object_pattern!(Options::First => { 's' });
+        let output = matcher(Options::First);
+        assert_eq!(output, vec!['s']);
+    }
+
+    #[test]
+    fn object_pattern_should_handle_namespaceless_cons_after_next() {
+        use Options::*;
+        let matcher : fn(Options) -> Vec<char> = object_pattern!( !; First => { 's' });
+        let output = matcher(First);
+        assert_eq!(output, vec!['s']);
+    }
+
+    #[test]
     fn object_pattern_should_handle_namespaceless_cons() {
         use Options::*;
         let matcher : fn(Options) -> Vec<char> = object_pattern!( First => { 's' });
