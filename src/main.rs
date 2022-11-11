@@ -25,6 +25,16 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_use_variables() {
+        struct Options2(u8, u8);
+        let matcher : for<'a> fn(&'a Options2) -> Vec<(&'a u8, &'a u8)> = object_pattern!(Options2(a, !); b => { (a, b) });
+        let output = matcher(&Options2(1, 2));
+        assert_eq!(output.len(), 1);
+        assert_eq!(*output[0].0, 1);
+        assert_eq!(*output[0].1, 2);
+    }
+
+    #[test]
     fn object_pattern_should_handle_param_cons_with_multiple_nexts() {
         struct Options2(u8, u8);
         let matcher : fn(Options2) -> Vec<char> = object_pattern!(Options2(!, !); 4 => { 's' });
