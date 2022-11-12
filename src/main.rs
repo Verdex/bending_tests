@@ -25,6 +25,27 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_last_tuple() {
+        let matcher : fn(Option<((u8, u8), u8)>) -> Vec<char> = object_pattern!(Some((!, 0)); (1, 1) => { 's' });
+        let output = matcher(Some(((1, 1),0)));
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_internal_tuple() {
+        let matcher : fn(Option<(u8, u8)>) -> Vec<char> = object_pattern!(Some((!, 0)); 1 => { 's' });
+        let output = matcher(Some((1,0)));
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_tuple() {
+        let matcher : fn((u8, u8)) -> Vec<char> = object_pattern!((!, 0); 1 => { 's' });
+        let output = matcher((1,0));
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
     fn object_pattern_should_use_variables() {
         struct Options2(u8, u8);
         let matcher : for<'a> fn(&'a Options2) -> Vec<(&'a u8, &'a u8)> = object_pattern!(Options2(a, !); b => { (a, b) });
