@@ -25,6 +25,13 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_empty_tuple() {
+        let matcher : fn(Option<()>) -> Vec<char> = object_pattern!(Some(!); () => { 's' });
+        let output = matcher(Some(()));
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_last_tuple() {
         let matcher : fn(Option<((u8, u8), u8)>) -> Vec<char> = object_pattern!(Some((!, 0)); (1, 1) => { 's' });
         let output = matcher(Some(((1, 1),0)));
