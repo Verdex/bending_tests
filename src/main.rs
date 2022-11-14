@@ -25,6 +25,13 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_at_pattern() {
+        let matcher : fn(&(u8, u8)) -> Vec<(u8, u8, u8, u8)> = object_pattern!((a @ 1, b @ !); c @ x => { (*a, *b, *x, *c) });
+        let output = matcher(&(1, 2));
+        assert_eq!( output, [(1, 2, 2, 2)] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_empty_tuple() {
         let matcher : fn(Option<()>) -> Vec<char> = object_pattern!(Some(!); () => { 's' });
         let output = matcher(Some(()));
