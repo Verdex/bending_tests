@@ -25,6 +25,13 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_if() {
+        let matcher : fn(u8) -> Vec<(u8, u8)> = object_pattern!(a @ ! {a != 0}; b @ 5..=10 {b != 7} => { (a, b) });
+        let output = matcher(6);
+        assert_eq!( output, [(6, 6)] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_ranges() {
         let matcher : fn((u8, char)) -> Vec<(u8, char)> 
             = object_pattern!((a @ 1..=10, !); b @ 'A'..='H' => { (a, b) });
