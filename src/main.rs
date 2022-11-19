@@ -25,6 +25,14 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_or() {
+        let matcher : fn((u8, u8)) -> Vec<(u8, u8)> 
+            = object_pattern!((a @ 1 | a @ 2, !) { a != 0 }; x | x => { (a, x) });
+        let output = matcher((2, 3));
+        assert_eq!( output, [(2, 3)] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_if() {
         let matcher : fn(u8) -> Vec<(u8, u8)> = object_pattern!(a @ ! {a != 0}; b @ 5..=10 {b != 7} => { (a, b) });
         let output = matcher(6);
