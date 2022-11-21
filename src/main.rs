@@ -3,7 +3,6 @@ use bending::*;
 
 
 fn main() {
-    //let _matcher : fn(Tree) -> Vec<char> = object_pattern!( Tree::Leaf(_) => { 's' });
         
     println!("Hello, world!");
 }
@@ -22,6 +21,22 @@ mod test {
     enum Options {
         First,
         Second,
+    }
+
+    #[test]
+    fn object_pattern_should_handle_struct() {
+        struct X {
+            s : S
+        }
+        struct S {
+            x : u8,
+            y : u8,
+            z : u8,
+        }
+        let matcher : fn(X) -> Vec<(u8, u8)> 
+            = object_pattern!(X { s: ! }; S { x, y: 8, .. } => { (x, y) });
+        let output = matcher(X { s: S { x: 1, y: 8, z: 0 }});
+        assert_eq!( output, [(1, 8)] );
     }
 
     #[test]
