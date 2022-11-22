@@ -24,6 +24,29 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_struct_with_rest() {
+        struct X {
+            y : u8,
+            s : u8,
+        }
+        let matcher : fn(X) -> Vec<char> 
+            = object_pattern!(X { y: 0, .. } => { 's' });
+        let output = matcher(X { s: 0, y: 0 } );
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_struct_with_only_rest() {
+        struct X {
+            s : u8 
+        }
+        let matcher : fn(X) -> Vec<char> 
+            = object_pattern!(X { .. } => { 's' });
+        let output = matcher(X { s: 0 } );
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_multiple_struct_and_if() {
         struct X {
             s : S
@@ -66,7 +89,7 @@ mod test {
         assert_eq!( output, [0] );
     }
 
-    /*#[test]
+    #[test]
     fn object_pattern_should_handle_struct() {
         struct X {
             s : S
@@ -76,11 +99,11 @@ mod test {
             y : u8,
             z : u8,
         }
-        let matcher : fn(X) -> Vec<(u8, u8)> 
-            = object_pattern!(X { s: ! }; S { x, y: 8, .. } => { (x, y) });
+        let matcher : fn(X) -> Vec<u8> 
+            = object_pattern!(X { s: ! }; S { x, y: 8, .. } => { x });
         let output = matcher(X { s: S { x: 1, y: 8, z: 0 }});
-        assert_eq!( output, [(1, 8)] );
-    }*/
+        assert_eq!( output, [1] );
+    }
 
     #[test]
     fn object_pattern_should_handle_or() {
