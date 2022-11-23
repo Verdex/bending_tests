@@ -118,6 +118,14 @@ mod test {
         assert_eq!( output, ['s'] );
     }
 
+    #[test] 
+    fn object_pattern_should_handle_if_after_variable() {
+        let matcher : fn(u8) -> Vec<u8>
+            = object_pattern!(a ? { a == 1 } => { a });
+        let output = matcher(1);
+        assert_eq!( output, [1] );
+    }
+
     #[test]
     fn object_pattern_should_handle_multiple_struct_and_if() {
         struct X {
