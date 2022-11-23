@@ -24,6 +24,22 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_negative_range() {
+        let matcher : fn(i8) -> Vec<i8> 
+            = object_pattern!(x @ -1..=1 => { x });
+        let output = matcher(0);
+        assert_eq!( output, [0] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_negative_literal() {
+        let matcher : fn(i8) -> Vec<char> 
+            = object_pattern!(-1 => { 's' });
+        let output = matcher(-1);
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_struct_with_rest() {
         struct X {
             y : u8,
