@@ -137,7 +137,7 @@ mod test {
             z : u8,
         }
         let matcher : fn(&X) -> Vec<char> 
-            = object_pattern!(X { s: w @ ! } { matches!(w, S { .. }) }; S { x : 0, y : 1, z: 2 } => { 's' });
+            = object_pattern!(X { s: w @ ! } ? { matches!(w, S { .. }) }; S { x : 0, y : 1, z: 2 } => { 's' });
         let output = matcher(&X { s: S { x: 0, y: 1, z: 2 } } );
         assert_eq!( output, ['s'] );
     }
@@ -188,14 +188,14 @@ mod test {
     #[test]
     fn object_pattern_should_handle_or() {
         let matcher : fn((u8, u8)) -> Vec<(u8, u8)> 
-            = object_pattern!((a @ 1 | a @ 2, !) { a != 0 }; x | x => { (a, x) });
+            = object_pattern!((a @ 1 | a @ 2, !) ? { a != 0 }; x | x => { (a, x) });
         let output = matcher((2, 3));
         assert_eq!( output, [(2, 3)] );
     }
 
     #[test]
     fn object_pattern_should_handle_if() {
-        let matcher : fn(u8) -> Vec<(u8, u8)> = object_pattern!(a @ ! {a != 0}; b @ 5..=10 {b != 7} => { (a, b) });
+        let matcher : fn(u8) -> Vec<(u8, u8)> = object_pattern!(a @ ! ? {a != 0}; b @ 5..=10 ? {b != 7} => { (a, b) });
         let output = matcher(6);
         assert_eq!( output, [(6, 6)] );
     }
