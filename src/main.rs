@@ -24,6 +24,62 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_list_with_variables() {
+        let matcher : fn(&[u8]) -> Vec<(u8, u8, u8)> 
+            = object_pattern!([a, b, c] => { (*a, *b, *c) });
+        let output = matcher(&vec![1, 2, 3]);
+        assert_eq!( output, [(1, 2, 3)] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_list_with_at_rest() {
+        let matcher : fn(&[u8]) -> Vec<char> 
+            = object_pattern!([1..=10, 2 | 3, a @ ..] ? { a.len() == 4 } => { 's' });
+        let output = matcher(&vec![1, 2, 3, 4, 5, 6]);
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_list_with_rest() {
+        let matcher : fn(&[u8]) -> Vec<u8> 
+            = object_pattern!([1..=10, 2 | 3, a @ !, ..]; 3  => { *a });
+        let output = matcher(&vec![1, 2, 3, 4, 5, 6]);
+        assert_eq!( output, [3] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_list_with_other_patterns() {
+        let matcher : fn(&[u8]) -> Vec<u8> 
+            = object_pattern!([1..=10, 2 | 3, a @ !]; 3  => { *a });
+        let output = matcher(&vec![1, 2, 3]);
+        assert_eq!( output, [3] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_list_with_at_pattern() { // Note:  Important because of 'x @ ..'
+        let matcher : fn(&[u8]) -> Vec<u8> 
+            = object_pattern!([1, 2, a @ _] => { *a });
+        let output = matcher(&vec![1, 2, 3]);
+        assert_eq!( output, [3] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_list() {
+        let matcher : fn(&[u8]) -> Vec<char> 
+            = object_pattern!([1, 2, 3] => { 's' });
+        let output = matcher(&vec![1, 2, 3]);
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_empty_list() {
+        let matcher : fn(&[u8]) -> Vec<char> 
+            = object_pattern!([] => { 's' });
+        let output = matcher(&vec![]);
+        assert_eq!( output, ['s'] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_negative_range() {
         let matcher : fn(i8) -> Vec<i8> 
             = object_pattern!(x @ -1..=1 => { x });
