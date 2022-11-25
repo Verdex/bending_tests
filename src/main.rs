@@ -23,9 +23,29 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_nested_nexts() {
+        let t = Tree::Node(
+            Box::new(Tree::Node(
+                Box::new(Tree::Leaf(2)),
+                Box::new(Tree::Leaf(3)),
+            )),
+            Box::new(Tree::Node(
+                Box::new(Tree::Leaf(4)),
+                Box::new(Tree::Leaf(6)),
+            )),
+        );
+
+        let matcher : fn(&Tree) -> Vec<u8> 
+            = object_pattern!(Tree::Node(!, !); Tree::Node(!, !); Tree::Leaf(x) ? { x % 2 == 0 } => { *x });
+
+        let output = matcher(&t);
+        assert_eq!( output, [6, 4, 2] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_if_and_execute() {
         let matcher : fn(u8) -> Vec<u8>
-            = object_pattern!( w @ ! ? { w % 2 == 0 } & { let x = 1; }; w2 @ 8 ? { w2 == 8 } & { let y = 2; } => { x + y });
+            = object_pattern!( w @ ! ? { *w % 2 == 0 } & { let x = 1; }; w2 @ 8 ? { *w2 == 8 } & { let y = 2; } => { x + y });
         let output = matcher(8);
         assert_eq!( output, [3] );
     }
@@ -97,7 +117,7 @@ mod test {
     #[test]
     fn object_pattern_should_handle_negative_range() {
         let matcher : fn(i8) -> Vec<i8> 
-            = object_pattern!(x @ -1..=1 => { x });
+            = object_pattern!(x @ -1..=1 => { *x });
         let output = matcher(0);
         assert_eq!( output, [0] );
     }
@@ -138,7 +158,7 @@ mod test {
     #[test] 
     fn object_pattern_should_handle_if_after_variable() {
         let matcher : fn(u8) -> Vec<u8>
-            = object_pattern!(a ? { a == 1 } => { a });
+            = object_pattern!(a ? { *a == 1 } => { *a });
         let output = matcher(1);
         assert_eq!( output, [1] );
     }
@@ -181,7 +201,7 @@ mod test {
             s : u8 
         }
         let matcher : fn(X) -> Vec<u8> 
-            = object_pattern!(X { s: y } => { y });
+            = object_pattern!(X { s: y } => { *y });
         let output = matcher(X { s: 0 } );
         assert_eq!( output, [0] );
     }
@@ -198,7 +218,7 @@ mod test {
             z : u8,
         }
         let matcher : fn(X) -> Vec<u8> 
-            = object_pattern!(X { s: ! }; S { x, y: 8, .. } => { x });
+            = object_pattern!(X { s: ! }; S { x, y: 8, .. } => { *x });
         let output = matcher(X { s: S { x: 1, y: 8, z: 0 }});
         assert_eq!( output, [1] );
     }
@@ -206,14 +226,14 @@ mod test {
     #[test]
     fn object_pattern_should_handle_or() {
         let matcher : fn((u8, u8)) -> Vec<(u8, u8)> 
-            = object_pattern!((a @ 1 | a @ 2, !) ? { a != 0 }; x | x => { (a, x) });
+            = object_pattern!((a @ 1 | a @ 2, !) ? { *a != 0 }; x | x => { (*a, *x) });
         let output = matcher((2, 3));
         assert_eq!( output, [(2, 3)] );
     }
 
     #[test]
     fn object_pattern_should_handle_if() {
-        let matcher : fn(u8) -> Vec<(u8, u8)> = object_pattern!(a @ ! ? {a != 0}; b @ 5..=10 ? {b != 7} => { (a, b) });
+        let matcher : fn(u8) -> Vec<(u8, u8)> = object_pattern!(a @ ! ? {*a != 0}; b @ 5..=10 ? {*b != 7} => { (*a, *b) });
         let output = matcher(6);
         assert_eq!( output, [(6, 6)] );
     }
@@ -221,7 +241,7 @@ mod test {
     #[test]
     fn object_pattern_should_handle_ranges() {
         let matcher : fn((u8, char)) -> Vec<(u8, char)> 
-            = object_pattern!((a @ 1..=10, !); b @ 'A'..='H' => { (a, b) });
+            = object_pattern!((a @ 1..=10, !); b @ 'A'..='H' => { (*a, *b) });
         let output = matcher((4, 'D'));
         assert_eq!( output, [(4, 'D')] );
     }
