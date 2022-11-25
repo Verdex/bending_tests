@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 bending = { path = "../bending" }
+denest = { path = "../denest", version = "0.1.0" }

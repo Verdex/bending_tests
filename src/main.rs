@@ -1,5 +1,4 @@
 
-use bending::*;
 
 
 fn main() {
@@ -9,17 +8,62 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use bending::*;
+    use denest::*;
 
-    #[derive(Debug)]
+    #[derive(Debug, PartialEq)]
     enum Tree {
         Node(Box<Tree>, Box<Tree>),
         Leaf(u8),
     }
 
+    impl<'a> Linearizable<'a> for Tree {
+        fn l_next(&'a self) -> Vec<&'a Self> {
+            match self {
+                Tree::Node(a, b) => vec![a, b],
+                Tree::Leaf(_) => vec![],
+            }
+        }
+    }    
+
+
     #[derive(Debug)]
     enum Options {
         First,
+    }
+
+    #[test]
+    fn object_pattern_should_be_able_to_double_match_in_lax() {
+        let t = Tree::Node(
+            Box::new(Tree::Node(
+                Box::new(Tree::Leaf(4)),
+                Box::new(Tree::Leaf(5)),
+            )),
+            Box::new(Tree::Node(
+                Box::new(Tree::Leaf(5)),
+                Box::new(Tree::Leaf(6)),
+            )),
+        );
+
+        fn is_leaf_of_5<'a>(input : &'a Tree) -> Vec<&'a Tree> {
+            let f : fn(&'a Tree) -> Vec<&'a Tree>
+                = object_pattern!(res @ Tree::Leaf(x) ? { *x == 5 } => { res });
+            f(input)
+        }  
+
+        let node_with_even_leaf_with_sibling_of_5 : for<'a> fn(&'a Tree) -> Vec<&'a Tree>
+            = object_pattern!(
+                Tree::Node(a @ !, b @ !) 
+                    & { 
+                        let a_5 = is_leaf_of_5(a); 
+                        let b_5 = is_leaf_of_5(b);
+                    }; 
+                res @ Tree::Leaf(x) ? { *x % 2 == 0 && (a_5.len() != 0 || b_5.len() != 0) }
+                => { res });
+
+        let output = t.to_lax().flat_map(|tlet| node_with_even_leaf_with_sibling_of_5(&tlet)).collect::<Vec<&Tree>>();
+        assert_eq!( output, [&Tree::Leaf(6), &Tree::Leaf(4)] );
+
     }
 
     #[test]
@@ -39,7 +83,7 @@ mod test {
             = object_pattern!(Tree::Node(!, !); Tree::Node(!, !); res @ Tree::Leaf(x) ? { x % 2 == 0 } => { res });
 
         let output = matcher(&t);
-        assert_eq!( output.len(), 3 );
+        assert_eq!( output, [&Tree::Leaf(6), &Tree::Leaf(4), &Tree::Leaf(2)] );
     }
 
     #[test]
