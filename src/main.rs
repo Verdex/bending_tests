@@ -20,7 +20,6 @@ mod test {
     #[derive(Debug)]
     enum Options {
         First,
-        Second,
     }
 
     #[test]
@@ -115,6 +114,7 @@ mod test {
     fn object_pattern_should_handle_struct_with_rest() {
         struct X {
             y : u8,
+            #[allow(dead_code)]
             s : u8,
         }
         let matcher : fn(X) -> Vec<char> 
@@ -126,6 +126,7 @@ mod test {
     #[test]
     fn object_pattern_should_handle_struct_with_only_rest() {
         struct X {
+            #[allow(dead_code)]
             s : u8 
         }
         let matcher : fn(X) -> Vec<char> 
@@ -193,6 +194,7 @@ mod test {
         struct S {
             x : u8,
             y : u8,
+            #[allow(dead_code)]
             z : u8,
         }
         let matcher : fn(X) -> Vec<u8> 
@@ -315,7 +317,6 @@ mod test {
             #[derive(Debug)]
             pub enum Options2 {
                 First,
-                Second,
             }
         }
         let matcher : fn(inner::Options2) -> Vec<char> = object_pattern!(inner::Options2::First => { 's' });
