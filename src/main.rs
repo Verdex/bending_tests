@@ -23,6 +23,26 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_result_lifetimes() {
+        let t = Tree::Node(
+            Box::new(Tree::Node(
+                Box::new(Tree::Leaf(2)),
+                Box::new(Tree::Leaf(3)),
+            )),
+            Box::new(Tree::Node(
+                Box::new(Tree::Leaf(4)),
+                Box::new(Tree::Leaf(6)),
+            )),
+        );
+
+        let matcher : for <'a> fn(&'a Tree) -> Vec<&'a Tree> 
+            = object_pattern!(Tree::Node(!, !); Tree::Node(!, !); res @ Tree::Leaf(x) ? { x % 2 == 0 } => { res });
+
+        let output = matcher(&t);
+        assert_eq!( output.len(), 3 );
+    }
+
+    #[test]
     fn object_pattern_should_handle_nested_nexts() {
         let t = Tree::Node(
             Box::new(Tree::Node(
