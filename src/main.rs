@@ -24,6 +24,22 @@ mod test {
     }
 
     #[test]
+    fn object_pattern_should_handle_if_and_execute() {
+        let matcher : fn(u8) -> Vec<u8>
+            = object_pattern!( w @ ! ? { w % 2 == 0 } & { let x = 1; }; w2 @ 8 ? { w2 == 8 } & { let y = 2; } => { x + y });
+        let output = matcher(8);
+        assert_eq!( output, [3] );
+    }
+
+    #[test]
+    fn object_pattern_should_handle_execute() {
+        let matcher : fn(u8) -> Vec<u8>
+            = object_pattern!(! & { let x = 1; }; 8 & { let y = 2; } => { x + y });
+        let output = matcher(8);
+        assert_eq!( output, [3] );
+    }
+
+    #[test]
     fn object_pattern_should_handle_list_with_variables() {
         let matcher : fn(&[u8]) -> Vec<(u8, u8, u8)> 
             = object_pattern!([a, b, c] => { (*a, *b, *c) });
