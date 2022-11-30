@@ -5,8 +5,9 @@ version = 3
 [[package]]
 name = "bending"
 version = "0.1.0"
+source = "git+https://github.com/Verdex/bending?tag=release-0.1.0#3b9959d465ef340b6c2da8b1e792c6216385a27a"
 dependencies = [
- "denest",
+ "denest 0.1.0 (git+https://github.com/Verdex/denest?tag=release-0.1.0)",
  "motif",
 ]
 
@@ -15,7 +16,7 @@ name = "bending_tests"
 version = "0.1.0"
 dependencies = [
  "bending",
- "denest",
+ "denest 0.1.0",
 ]
 
 [[package]]
@@ -23,5 +24,11 @@ name = "denest"
 version = "0.1.0"
 
 [[package]]
+name = "denest"
+version = "0.1.0"
+source = "git+https://github.com/Verdex/denest?tag=release-0.1.0#1df2a91c4316d4f5daa785c9ab21851b72d8473b"
+
+[[package]]
 name = "motif"
 version = "0.1.0"
+source = "git+https://github.com/Verdex/motif?tag=release-0.1.0#8ae8cc88956756f0bf48750ea5b8e89c9fba6ddf"
